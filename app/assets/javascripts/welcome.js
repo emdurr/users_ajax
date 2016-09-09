@@ -11,17 +11,16 @@ $(document).ready(function() {
 			dataType: 'JSON'
 		}).done(function(data) {
 			data.forEach(function(user) {
-				$('#users').append('<div class="card col s6">\n<div class="card-title"><li>' + user.first_name 
+				$('#users').append('<div class="card col s6" >\n<div class="card-title"><li>' 
+																	+ user.first_name 
 																	+ ' ' 
 																	+ user.last_name 
 																	+ '<hr>'
-																	+ '<div class="card-action"> <button data-user-id="' 
+																	+ '<div class="card-action" data-user-id="'
 																	+ user.id 
-																	+ '" class="delete_user">Delete</button>'
+																	+ '""> <button class="delete_user">Delete</button>'
 																	+ ' '
-																	+ '<button data-user-id="'
-																	+ user.id
-																	+ '" class="edit_user">Edit</button></div>\n</li>\n</div>\n</div>');
+																	+ '<button class="edit_button">Edit</button></div>\n</li>\n</div>\n</div>');
 			});
 		}).fail(function(data) {
 			console.log(data);
@@ -31,9 +30,9 @@ $(document).ready(function() {
 		loadUsers();
 	});
 	$(document).on('click', '.delete_user', function() {
-		var $userId = $(this).data('user-id');
+		var userId = $(this).parent().data('user-id');
 		$.ajax({
-			url: BASEURL + '/users/' + $userId,
+			url: BASEURL + '/users/' + userId,
 			type: 'DELETE',
 			dataType: 'JSON',
 		}).done(function(data){
@@ -43,8 +42,24 @@ $(document).ready(function() {
 			console.log(data);
 		});
 	});
-	$(document).on('click', '.edit_user', function() {
-
+	$(document).on('click', '.edit_button', function() {
+		var userId = $(this).parent().data('user-id');
+		$.ajax( {
+			url: BASEURL + '/users/' + userId,
+			type: 'GET',
+			dataType: 'JSON'
+		}).done(function(data) {
+			var firstN = data.first_name;
+			var lastN = data.last_name;
+			var phone = data.phone_number;
+			$('#edit_first_name').val(firstN);
+			$('#edit_last_name').val(lastN);
+			$('#edit_phone_num').val(phone);
+			$('#user_id').val(userId);
+			$('#edit_form').slideDown();
+		}).fail(function(data) {
+			console.log(data);
+		});
 	});
 	createButton.click(function() {
 		createForm.slideToggle(400, function() {
@@ -58,6 +73,7 @@ $(document).ready(function() {
 	});
 	$('#new_user').submit(function(e) {
 		e.preventDefault();
+		var form = this;
 		var $firstName = $('#user_first_name');
 		var $lastName = $('#user_last_name');
 		var $phoneNum = $('#user_phone_number');
@@ -70,10 +86,25 @@ $(document).ready(function() {
 										phone_number: $phoneNum.val()}}
 		}).done(function(data) {
 			alert('User created Successfully!');
-			$firstName.val('');
-			$lastName.val('');
-			$phoneNum.val('');
+			form.reset();
 			$firstName.focus();
+			loadUsers();
+		}).fail(function(data) {
+			console.log(data);
+		});
+	});
+	$('#edit_user').submit(function(e) {
+		e.preventDefault();
+		var form = this;
+		var userId = $('#user_id').val();
+		$.ajax({
+			url: BASEURL + '/users/' + userId,
+			type: 'PUT',
+			dataType: 'JSON',
+			data: $(this).serializeArray()
+		}).done(function(data) {
+			form.reset();
+			$('#edit_form').slideUp();
 			loadUsers();
 		}).fail(function(data) {
 			console.log(data);
