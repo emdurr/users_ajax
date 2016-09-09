@@ -1,0 +1,26 @@
+<div class="container">
+	<h1 class="center-align">All Users from AJAX</h1>
+	<hr>
+	<button id="load_users">Load Users</button>
+	<button id="show_create">Create User</button>
+	<div class="row">		
+		<div class="col s6 offset-s3">
+			<div class="no-display u-form" id="create_form">
+				<form class="in-form" action="/users" method="POST" id="new_user">
+					<input id='user_first_name' type="text" placeholder="First Name" name="user[first_name]" required>
+					<br>
+					<input id='user_last_name' type="text" placeholder="Last Name" name="user[last_name]" >
+					<br>
+					<input id='user_phone_number' placeholder="Phone Number" name="user[phone_number]">
+					<br>
+					<input type="submit" >
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<ul id="users">
+		
+		</ul>
+	</div>
+</div>
